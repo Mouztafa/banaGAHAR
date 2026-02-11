@@ -64,18 +64,27 @@
         }
     </style>
 </head>
-<body class="text-gray-800 h-screen flex overflow-hidden">
+<body class="text-gray-800 h-[100dvh] flex overflow-hidden">
 
-    <!-- Mobile Header -->
-    <div class="md:hidden fixed w-full bg-white z-50 border-b flex justify-between items-center p-4 shadow-sm h-16">
+    <!-- Mobile Header (Fixed at top, z-30) -->
+    <div class="md:hidden fixed w-full bg-white z-30 border-b flex justify-between items-center p-4 shadow-sm h-16">
         <div class="font-bold text-teal-700 text-lg">بنا أبو صير</div>
-        <button onclick="toggleSidebar()" class="text-gray-600 focus:outline-none">
+        <button onclick="toggleSidebar()" class="text-gray-600 focus:outline-none p-2 rounded hover:bg-gray-100">
             <i class="fas fa-bars text-2xl"></i>
         </button>
     </div>
 
-    <!-- Sidebar -->
-    <aside id="sidebar" class="bg-white w-64 h-full flex flex-col fixed md:relative transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-40 shadow-xl border-l border-gray-200 pt-16 md:pt-0">
+    <!-- Sidebar (z-50 on mobile to cover header) -->
+    <aside id="sidebar" class="bg-white w-64 h-full flex flex-col fixed md:relative transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-50 shadow-2xl border-l border-gray-200">
+        
+        <!-- Mobile Sidebar Header with Close Button -->
+        <div class="md:hidden p-4 border-b flex justify-between items-center bg-teal-50">
+            <span class="font-bold text-teal-800">القائمة</span>
+            <button onclick="toggleSidebar()" class="text-gray-500 hover:text-red-500 focus:outline-none">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+
         <div class="p-6 border-b flex flex-col items-center">
             <div class="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center text-teal-600 text-2xl mb-2">
                 <i class="fas fa-hospital"></i>
@@ -121,24 +130,24 @@
         </div>
     </aside>
 
-    <!-- Overlay for Mobile Sidebar -->
-    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden"></div>
+    <!-- Overlay for Mobile Sidebar (z-40) -->
+    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden md:hidden backdrop-blur-sm"></div>
 
     <!-- Main Content -->
-    <main class="flex-1 overflow-y-auto p-4 md:p-8 pt-20 md:pt-8">
+    <main class="flex-1 overflow-y-auto p-4 md:p-8 pt-24 md:pt-8 w-full">
         
         <!-- Header Info -->
         <header class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center">
-            <div>
+            <div class="w-full md:w-auto">
                 <h1 class="text-2xl font-bold text-gray-800">خطة إدارة المرافق والسلامة</h1>
                 <p class="text-sm text-gray-500">تاريخ المراجعة القادم: 4/6/2028 | الكود: EFS.11 GSR.18</p>
             </div>
-            <div class="mt-4 md:mt-0 flex gap-2">
-                <button onclick="window.print()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition text-sm">
-                    <i class="fas fa-print ml-1"></i> طباعة التقرير
+            <div class="mt-4 md:mt-0 flex gap-2 w-full md:w-auto">
+                <button onclick="window.print()" class="flex-1 md:flex-none bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition text-sm text-center">
+                    <i class="fas fa-print ml-1"></i> طباعة
                 </button>
-                <button class="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition text-sm shadow">
-                    <i class="fas fa-plus ml-1"></i> بلاغ عطل جديد
+                <button class="flex-1 md:flex-none bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition text-sm shadow text-center">
+                    <i class="fas fa-plus ml-1"></i> بلاغ عطل
                 </button>
             </div>
         </header>
@@ -197,14 +206,14 @@
                 <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
                     <h3 class="font-bold text-lg mb-4 text-gray-800 border-b pb-2">جدول الصيانة المستحق هذا الأسبوع</h3>
                     <div class="overflow-x-auto">
-                        <table class="w-full text-sm text-right">
+                        <table class="w-full text-sm text-right min-w-[500px]"> <!-- Added min-w for horizontal scroll -->
                             <thead class="bg-gray-50 text-gray-600">
                                 <tr>
-                                    <th class="p-3">المرفق</th>
-                                    <th class="p-3">نوع الإجراء</th>
-                                    <th class="p-3">التكرار</th>
-                                    <th class="p-3">الحالة</th>
-                                    <th class="p-3">إجراء</th>
+                                    <th class="p-3 whitespace-nowrap">المرفق</th>
+                                    <th class="p-3 whitespace-nowrap">نوع الإجراء</th>
+                                    <th class="p-3 whitespace-nowrap">التكرار</th>
+                                    <th class="p-3 whitespace-nowrap">الحالة</th>
+                                    <th class="p-3 whitespace-nowrap">إجراء</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y">
@@ -238,21 +247,21 @@
                     <h3 class="font-bold text-lg mb-4 text-gray-800 border-b pb-2">تنبيهات النظام</h3>
                     <ul class="space-y-4">
                         <li class="flex items-start">
-                            <i class="fas fa-info-circle text-blue-500 mt-1 ml-3"></i>
+                            <i class="fas fa-info-circle text-blue-500 mt-1 ml-3 flex-shrink-0"></i>
                             <div>
                                 <p class="text-sm font-semibold">مراجعة طفايات الحريق</p>
                                 <p class="text-xs text-gray-500">موعد المراجعة القادم: 15/06/2025</p>
                             </div>
                         </li>
                         <li class="flex items-start">
-                            <i class="fas fa-tint text-teal-500 mt-1 ml-3"></i>
+                            <i class="fas fa-tint text-teal-500 mt-1 ml-3 flex-shrink-0"></i>
                             <div>
                                 <p class="text-sm font-semibold">عينة مياه الخزان</p>
                                 <p class="text-xs text-gray-500">تم إرسال العينة للمعمل الإقليمي بطنطا</p>
                             </div>
                         </li>
                         <li class="flex items-start">
-                            <i class="fas fa-gas-pump text-yellow-500 mt-1 ml-3"></i>
+                            <i class="fas fa-gas-pump text-yellow-500 mt-1 ml-3 flex-shrink-0"></i>
                             <div>
                                 <p class="text-sm font-semibold">تنبيه وقود</p>
                                 <p class="text-xs text-gray-500">مخزون الديزل 300 لتر (الحد الأدنى للطلب 200 لتر)</p>
@@ -298,7 +307,7 @@
             <div class="bg-white rounded-xl shadow-sm p-8">
                 <h2 class="text-xl font-bold text-teal-800 mb-4">فريق العمل المسؤول</h2>
                 <div class="overflow-x-auto">
-                    <table class="w-full text-right border-collapse">
+                    <table class="w-full text-right border-collapse min-w-[500px]">
                         <thead>
                             <tr class="bg-teal-50 text-teal-800">
                                 <th class="p-3 border">الدور</th>
@@ -641,10 +650,10 @@
             
             <!-- Tabbed Forms -->
             <div class="flex space-x-2 space-x-reverse mb-6 overflow-x-auto pb-2">
-                <button onclick="switchForm('gen-form')" class="form-tab px-4 py-2 bg-teal-600 text-white rounded-lg whitespace-nowrap transition-colors">سجل المولد (يومي)</button>
-                <button onclick="switchForm('elec-form')" class="form-tab px-4 py-2 bg-white text-gray-600 border rounded-lg hover:bg-gray-50 whitespace-nowrap transition-colors">لوحات الكهرباء (أسبوعي)</button>
-                <button onclick="switchForm('water-form')" class="form-tab px-4 py-2 bg-white text-gray-600 border rounded-lg hover:bg-gray-50 whitespace-nowrap transition-colors">المياه (أسبوعي)</button>
-                <button onclick="switchForm('nurse-form')" class="form-tab px-4 py-2 bg-white text-gray-600 border rounded-lg hover:bg-gray-50 whitespace-nowrap transition-colors">استدعاء التمريض</button>
+                <button onclick="switchForm('gen-form')" class="form-tab px-4 py-2 bg-teal-600 text-white rounded-lg whitespace-nowrap transition-colors flex-shrink-0">سجل المولد (يومي)</button>
+                <button onclick="switchForm('elec-form')" class="form-tab px-4 py-2 bg-white text-gray-600 border rounded-lg hover:bg-gray-50 whitespace-nowrap transition-colors flex-shrink-0">لوحات الكهرباء (أسبوعي)</button>
+                <button onclick="switchForm('water-form')" class="form-tab px-4 py-2 bg-white text-gray-600 border rounded-lg hover:bg-gray-50 whitespace-nowrap transition-colors flex-shrink-0">المياه (أسبوعي)</button>
+                <button onclick="switchForm('nurse-form')" class="form-tab px-4 py-2 bg-white text-gray-600 border rounded-lg hover:bg-gray-50 whitespace-nowrap transition-colors flex-shrink-0">استدعاء التمريض</button>
             </div>
 
             <!-- Generator Form -->
@@ -702,7 +711,7 @@
                         <textarea class="w-full border rounded p-2" rows="2"></textarea>
                     </div>
                     <div class="md:col-span-2 lg:col-span-3 text-left">
-                        <button type="submit" class="bg-teal-600 text-white px-6 py-2 rounded hover:bg-teal-700 transition">حفظ السجل</button>
+                        <button type="submit" class="bg-teal-600 text-white px-6 py-2 rounded hover:bg-teal-700 transition w-full md:w-auto">حفظ السجل</button>
                     </div>
                 </form>
             </div>
@@ -722,7 +731,7 @@
                         </div>
                      </div>
                      
-                     <div class="grid grid-cols-2 gap-4">
+                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <label class="flex items-center space-x-2 space-x-reverse">
                             <input type="checkbox" class="form-checkbox text-teal-600 h-5 w-5">
                             <span class="mr-2">أجهزة الحماية تعمل</span>
@@ -741,7 +750,7 @@
                         </label>
                     </div>
                     <div class="text-left mt-4">
-                         <button type="submit" class="bg-teal-600 text-white px-6 py-2 rounded hover:bg-teal-700 transition">حفظ</button>
+                         <button type="submit" class="bg-teal-600 text-white px-6 py-2 rounded hover:bg-teal-700 transition w-full md:w-auto">حفظ</button>
                     </div>
                 </form>
             </div>
@@ -749,7 +758,7 @@
             <div id="water-form" class="form-content hidden bg-white p-6 rounded-xl shadow-lg border border-gray-100">
                 <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">نموذج المرور الأسبوعي على مرافق المياه</h3>
                 <form onsubmit="submitLog(event)" class="space-y-4">
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <label class="flex items-center space-x-2 space-x-reverse">
                             <input type="checkbox" class="form-checkbox text-teal-600 h-5 w-5">
                             <span class="mr-2">مواتير المياه تعمل بكفاءة</span>
@@ -768,7 +777,7 @@
                         </label>
                     </div>
                     <div class="text-left mt-4">
-                         <button type="submit" class="bg-teal-600 text-white px-6 py-2 rounded hover:bg-teal-700 transition">حفظ</button>
+                         <button type="submit" class="bg-teal-600 text-white px-6 py-2 rounded hover:bg-teal-700 transition w-full md:w-auto">حفظ</button>
                     </div>
                 </form>
             </div>
@@ -795,7 +804,7 @@
                         </label>
                      </div>
                       <div class="text-left mt-4">
-                         <button type="submit" class="bg-teal-600 text-white px-6 py-2 rounded hover:bg-teal-700 transition">حفظ</button>
+                         <button type="submit" class="bg-teal-600 text-white px-6 py-2 rounded hover:bg-teal-700 transition w-full md:w-auto">حفظ</button>
                     </div>
                  </form>
             </div>
@@ -809,12 +818,16 @@
             <div class="grid md:grid-cols-2 gap-8">
                 <div class="bg-white p-6 rounded-xl shadow-sm">
                     <h3 class="font-bold text-gray-700 mb-4 text-center">اختبارات المولد (المخطط vs المنفذ)</h3>
-                    <canvas id="generatorChart" height="200"></canvas>
+                    <div class="h-64 relative"> <!-- Fixed height for chart on mobile -->
+                        <canvas id="generatorChart"></canvas>
+                    </div>
                 </div>
 
                 <div class="bg-white p-6 rounded-xl shadow-sm">
-                    <h3 class="font-bold text-gray-700 mb-4 text-center">نتائج تحليل عينات المياه (مطابق/غير مطابق)</h3>
-                    <canvas id="waterChart" height="200"></canvas>
+                    <h3 class="font-bold text-gray-700 mb-4 text-center">نتائج تحليل عينات المياه</h3>
+                     <div class="h-64 relative"> <!-- Fixed height for chart on mobile -->
+                        <canvas id="waterChart"></canvas>
+                    </div>
                 </div>
                 
                  <div class="bg-white p-6 rounded-xl shadow-sm md:col-span-2">
@@ -894,7 +907,7 @@
             }
         }
 
-        // Schedule Tabs Logic (FIXED)
+        // Schedule Tabs Logic
         function switchSchedule(type, btn) {
             // Hide all schedule contents
             document.querySelectorAll('.schedule-content').forEach(el => el.classList.add('hidden'));
@@ -922,8 +935,6 @@
             });
             
             // Set Active Tab Style
-            // Find the button that triggered this or correspond to the form
-            // Since this can be called from "Quick Actions", we iterate to find the matching button
             const buttons = document.querySelectorAll('.form-tab');
             let activeBtn;
             if (formId === 'gen-form') activeBtn = buttons[0];
