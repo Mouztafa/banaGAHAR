@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>خطة إدارة المرافق - مركز بنا أبو صير</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .sidebar-active {
+            background-color: #0d9488; /* teal-600 */
+            color: white;
+            border-right: 4px solid #f0fdf4;
+        }
+        .content-section {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        .content-section.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        .hidden {
+            display: none;
+        }
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .print-area, .print-area * {
+                visibility: visible;
+            }
+            .print-area {
+                display: block;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body class="text-gray-800 h-screen flex overflow-hidden">
+
+    <!-- Mobile Header -->
+    <div class="md:hidden fixed w-full bg-white z-50 border-b flex justify-between items-center p-4 shadow-sm h-16">
+        <div class="font-bold text-teal-700 text-lg">بنا أبو صير</div>
+        <button onclick="toggleSidebar()" class="text-gray-600 focus:outline-none">
+            <i class="fas fa-bars text-2xl"></i>
+        </button>
+    </div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="bg-white w-64 h-full flex flex-col fixed md:relative transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-40 shadow-xl border-l border-gray-200 pt-16 md:pt-0">
+        <div class="p-6 border-b flex flex-col items-center">
+            <div class="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center text-teal-600 text-2xl mb-2">
+                <i class="fas fa-hospital"></i>
+            </div>
+            <h2 class="text-lg font-bold text-gray-800 text-center">مركز الرعاية الأولية<br>ببنا أبو صير</h2>
+            <p class="text-xs text-gray-500 mt-1">خطة إدارة المرافق EFS.11</p>
+        </div>
+        
+        <nav class="flex-1 overflow-y-auto py-4">
+            <button onclick="showSection('dashboard', this)" class="sidebar-btn w-full text-right px-6 py-3 hover:bg-teal-50 hover:text-teal-700 transition-colors sidebar-active flex items-center">
+                <i class="fas fa-chart-pie w-6 ml-2"></i> لوحة المعلومات
+            </button>
+            <button onclick="showSection('policy', this)" class="sidebar-btn w-full text-right px-6 py-3 hover:bg-teal-50 hover:text-teal-700 transition-colors flex items-center">
+                <i class="fas fa-book w-6 ml-2"></i> السياسة والأهداف
+            </button>
+            <button onclick="showSection('inventory', this)" class="sidebar-btn w-full text-right px-6 py-3 hover:bg-teal-50 hover:text-teal-700 transition-colors flex items-center">
+                <i class="fas fa-boxes w-6 ml-2"></i> حصر الأنظمة
+            </button>
+            <button onclick="showSection('schedule', this)" class="sidebar-btn w-full text-right px-6 py-3 hover:bg-teal-50 hover:text-teal-700 transition-colors flex items-center">
+                <i class="fas fa-calendar-check w-6 ml-2"></i> خطة الصيانة
+            </button>
+            <button onclick="showSection('emergency', this)" class="sidebar-btn w-full text-right px-6 py-3 hover:bg-teal-50 hover:text-teal-700 transition-colors flex items-center">
+                <i class="fas fa-exclamation-triangle w-6 ml-2"></i> إجراءات الطوارئ
+            </button>
+            <button onclick="showSection('forms', this)" class="sidebar-btn w-full text-right px-6 py-3 hover:bg-teal-50 hover:text-teal-700 transition-colors flex items-center">
+                <i class="fas fa-clipboard-list w-6 ml-2"></i> السجلات والنماذج
+            </button>
+            <button onclick="showSection('kpi', this)" class="sidebar-btn w-full text-right px-6 py-3 hover:bg-teal-50 hover:text-teal-700 transition-colors flex items-center">
+                <i class="fas fa-chart-line w-6 ml-2"></i> مؤشرات الأداء
+            </button>
+        </nav>
+
+        <div class="p-4 border-t bg-gray-50">
+            <div class="flex items-center">
+                <div class="w-10 h-10 rounded-full bg-teal-600 text-white flex items-center justify-center ml-3">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-bold">مسؤول المرافق</p>
+                    <p class="text-xs text-green-600">متصل الآن</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Overlay for Mobile Sidebar -->
+    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden"></div>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto p-4 md:p-8 pt-20 md:pt-8">
+        
+        <!-- Header Info -->
+        <header class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-800">خطة إدارة المرافق والسلامة</h1>
+                <p class="text-sm text-gray-500">تاريخ المراجعة القادم: 4/6/2028 | الكود: EFS.11 GSR.18</p>
+            </div>
+            <div class="mt-4 md:mt-0 flex gap-2">
+                <button onclick="window.print()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition text-sm">
+                    <i class="fas fa-print ml-1"></i> طباعة التقرير
+                </button>
+                <button class="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition text-sm shadow">
+                    <i class="fas fa-plus ml-1"></i> بلاغ عطل جديد
+                </button>
+            </div>
+        </header>
+
+        <!-- DASHBOARD SECTION -->
+        <section id="dashboard" class="content-section active">
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm mb-1">حالة المولد الكهربائي</p>
+                        <h3 class="text-xl font-bold text-green-600">يعمل / جاهز</h3>
+                        <p class="text-xs text-gray-400 mt-1">آخر اختبار: أمس</p>
+                    </div>
+                    <div class="bg-green-100 p-3 rounded-full text-green-600">
+                        <i class="fas fa-bolt text-xl"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm mb-1">مخزون السولار</p>
+                        <h3 class="text-xl font-bold text-blue-600">300 لتر</h3>
+                        <p class="text-xs text-gray-400 mt-1">يكفي: 24 ساعة</p>
+                    </div>
+                    <div class="bg-blue-100 p-3 rounded-full text-blue-600">
+                        <i class="fas fa-gas-pump text-xl"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm mb-1">خزانات المياه</p>
+                        <h3 class="text-xl font-bold text-teal-600">8 متر مكعب</h3>
+                        <p class="text-xs text-gray-400 mt-1">4 خزانات ممتلئة</p>
+                    </div>
+                    <div class="bg-teal-100 p-3 rounded-full text-teal-600">
+                        <i class="fas fa-faucet text-xl"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm mb-1">أعطال مفتوحة</p>
+                        <h3 class="text-xl font-bold text-orange-600">2</h3>
+                        <p class="text-xs text-gray-400 mt-1">جاري العمل عليها</p>
+                    </div>
+                    <div class="bg-orange-100 p-3 rounded-full text-orange-600">
+                        <i class="fas fa-tools text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions & Updates -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                    <h3 class="font-bold text-lg mb-4 text-gray-800 border-b pb-2">جدول الصيانة المستحق هذا الأسبوع</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-right">
+                            <thead class="bg-gray-50 text-gray-600">
+                                <tr>
+                                    <th class="p-3">المرفق</th>
+                                    <th class="p-3">نوع الإجراء</th>
+                                    <th class="p-3">التكرار</th>
+                                    <th class="p-3">الحالة</th>
+                                    <th class="p-3">إجراء</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y">
+                                <tr>
+                                    <td class="p-3 font-medium">المولد الكهربائي</td>
+                                    <td class="p-3">اختبار بدون حمل</td>
+                                    <td class="p-3">أسبوعي</td>
+                                    <td class="p-3"><span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs">مستحق</span></td>
+                                    <td class="p-3"><button onclick="showSection('forms', document.querySelector('[onclick*=\'forms\']')); switchForm('gen-form')" class="text-teal-600 hover:underline">تسجيل</button></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-medium">لوحات الكهرباء</td>
+                                    <td class="p-3">فحص الأسلاك والمفاتيح</td>
+                                    <td class="p-3">أسبوعي</td>
+                                    <td class="p-3"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">تم</span></td>
+                                    <td class="p-3 text-gray-400">-</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-medium">نظام استدعاء التمريض</td>
+                                    <td class="p-3">فحص بصري وتجربة</td>
+                                    <td class="p-3">أسبوعي</td>
+                                    <td class="p-3"><span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs">مستحق</span></td>
+                                    <td class="p-3"><button onclick="showSection('forms', document.querySelector('[onclick*=\'forms\']')); switchForm('nurse-form')" class="text-teal-600 hover:underline">تسجيل</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                    <h3 class="font-bold text-lg mb-4 text-gray-800 border-b pb-2">تنبيهات النظام</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <i class="fas fa-info-circle text-blue-500 mt-1 ml-3"></i>
+                            <div>
+                                <p class="text-sm font-semibold">مراجعة طفايات الحريق</p>
+                                <p class="text-xs text-gray-500">موعد المراجعة القادم: 15/06/2025</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-tint text-teal-500 mt-1 ml-3"></i>
+                            <div>
+                                <p class="text-sm font-semibold">عينة مياه الخزان</p>
+                                <p class="text-xs text-gray-500">تم إرسال العينة للمعمل الإقليمي بطنطا</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-gas-pump text-yellow-500 mt-1 ml-3"></i>
+                            <div>
+                                <p class="text-sm font-semibold">تنبيه وقود</p>
+                                <p class="text-xs text-gray-500">مخزون الديزل 300 لتر (الحد الأدنى للطلب 200 لتر)</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- POLICY SECTION -->
+        <section id="policy" class="content-section">
+            <div class="bg-white rounded-xl shadow-sm p-8 mb-6">
+                <h2 class="text-2xl font-bold text-teal-800 mb-6 border-b pb-2">أهداف ومجال الخطة</h2>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-lg font-bold mb-3 flex items-center text-gray-700">
+                            <span class="bg-teal-100 p-2 rounded ml-2"><i class="fas fa-bullseye text-teal-600"></i></span>
+                            الأهداف العامة
+                        </h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-600 leading-relaxed pr-4">
+                            <li>ضمان سلامة وكفاءة أنظمة المرافق لجميع أقسام وتجهيزات المركز.</li>
+                            <li>توفير بيئة آمنة للمرضى والزوار والعاملين طوال 24 ساعة 7 أيام.</li>
+                            <li>تقليل مخاطر أعطال التشغيل من خلال الفحص المنتظم والصيانة.</li>
+                            <li>توفير الوقود اللازم لتشغيل المولد في حالة الطوارئ.</li>
+                            <li>ضمان جودة المياه من خلال التنظيف والتطهير الدوري للخزانات.</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-lg font-bold mb-3 flex items-center text-gray-700">
+                            <span class="bg-teal-100 p-2 rounded ml-2"><i class="fas fa-globe text-teal-600"></i></span>
+                            مجال العمل
+                        </h3>
+                        <p class="text-gray-600 leading-relaxed bg-gray-50 p-4 rounded-lg border-r-4 border-teal-500">
+                            متابعة جميع المرافق والخدمات وضمان استمرارية توافرها 24 ساعة يومياً 7 أيام أسبوعياً لجميع الأقسام الطبية وغير الطبية وجميع المتواجدين بالمنشأة من عاملين ومرضى وزوار بمركز بنا أبو صير.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm p-8">
+                <h2 class="text-xl font-bold text-teal-800 mb-4">فريق العمل المسؤول</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right border-collapse">
+                        <thead>
+                            <tr class="bg-teal-50 text-teal-800">
+                                <th class="p-3 border">الدور</th>
+                                <th class="p-3 border">المسؤولية</th>
+                                <th class="p-3 border">الاسم / الجهة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="p-3 border">مدير المركز</td>
+                                <td class="p-3 border">الاعتماد النهائي والمتابعة</td>
+                                <td class="p-3 border font-bold">د. حامد</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 border">مسؤول الجودة</td>
+                                <td class="p-3 border">مراجعة الامتثال للمعايير</td>
+                                <td class="p-3 border font-bold">د. خلود العاملي</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 border">فني هندسي / مسؤول الصيانة</td>
+                                <td class="p-3 border">التنفيذ المباشر والمتابعة</td>
+                                <td class="p-3 border">مسؤول المرافق بالمركز</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 border">فنيين الكهرباء</td>
+                                <td class="p-3 border">تشغيل وصيانة المولد واللوحات</td>
+                                <td class="p-3 border">فريق الإدارة الصحية بسمنود</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- INVENTORY SECTION -->
+        <section id="inventory" class="content-section">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">جرد أنظمة المرافق</h2>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Electricity -->
+                <div class="bg-white rounded-xl shadow-sm p-6 border-t-4 border-yellow-400">
+                    <h3 class="text-lg font-bold mb-4 flex items-center">
+                        <i class="fas fa-bolt text-yellow-500 ml-2"></i> الكهرباء والمولدات
+                    </h3>
+                    <ul class="space-y-3 text-sm">
+                        <li class="flex justify-between border-b pb-2">
+                            <span>المصدر الأساسي</span>
+                            <span class="font-bold">شركة الكهرباء (11000 فولت)</span>
+                        </li>
+                        <li class="flex justify-between border-b pb-2">
+                            <span>المولد الاحتياطي</span>
+                            <span class="font-bold">كمنز أمريكي (130 KVA)</span>
+                        </li>
+                        <li class="flex justify-between border-b pb-2">
+                            <span>خزان السولار</span>
+                            <span class="font-bold">300 لتر</span>
+                        </li>
+                        <li class="flex justify-between pt-2">
+                            <span>نظام التحويل</span>
+                            <span class="font-bold">ATS (27 ثانية)</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Water -->
+                <div class="bg-white rounded-xl shadow-sm p-6 border-t-4 border-blue-400">
+                    <h3 class="text-lg font-bold mb-4 flex items-center">
+                        <i class="fas fa-water text-blue-500 ml-2"></i> المياه والصرف
+                    </h3>
+                    <ul class="space-y-3 text-sm">
+                        <li class="flex justify-between border-b pb-2">
+                            <span>المصدر الأساسي</span>
+                            <span class="font-bold">شبكة المياه العمومية (البلدية)</span>
+                        </li>
+                        <li class="flex justify-between border-b pb-2">
+                            <span>خزانات المياه</span>
+                            <span class="font-bold">4 خزانات × 2000 لتر (إجمالي 8م³)</span>
+                        </li>
+                        <li class="flex justify-between border-b pb-2">
+                            <span>المضخات</span>
+                            <span class="font-bold">2 رفع + 2 ضخ (تبادلي)</span>
+                        </li>
+                        <li class="flex justify-between pt-2">
+                            <span>الصرف الصحي</span>
+                            <span class="font-bold">شبكة عمومية وغرف تفتيش</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Mechanical/AC -->
+                <div class="bg-white rounded-xl shadow-sm p-6 border-t-4 border-teal-400">
+                    <h3 class="text-lg font-bold mb-4 flex items-center">
+                        <i class="fas fa-fan text-teal-500 ml-2"></i> الأنظمة الميكانيكية
+                    </h3>
+                    <ul class="space-y-3 text-sm">
+                        <li class="flex justify-between border-b pb-2">
+                            <span>المصعد</span>
+                            <span class="font-bold">شاندلر (ألماني) - 650 كجم</span>
+                        </li>
+                        <li class="flex justify-between border-b pb-2">
+                            <span>التكييفات</span>
+                            <span class="font-bold">سبليت (حائطي)</span>
+                        </li>
+                        <li class="flex justify-between border-b pb-2">
+                            <span>الثلاجات</span>
+                            <span class="font-bold">ثلاجات عادية (تطعيمات/أدوية)</span>
+                        </li>
+                        <li class="flex justify-between pt-2">
+                            <span>أخرى</span>
+                            <span class="font-bold">شفاطات حائط، سخانات</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- IT & Safety -->
+                <div class="bg-white rounded-xl shadow-sm p-6 border-t-4 border-red-400">
+                    <h3 class="text-lg font-bold mb-4 flex items-center">
+                        <i class="fas fa-shield-alt text-red-500 ml-2"></i> السلامة والأنظمة الخفيفة
+                    </h3>
+                    <ul class="space-y-3 text-sm">
+                        <li class="flex justify-between border-b pb-2">
+                            <span>إنذار الحريق</span>
+                            <span class="font-bold">كواشف دخان، كواسر</span>
+                        </li>
+                        <li class="flex justify-between border-b pb-2">
+                            <span>المراقبة</span>
+                            <span class="font-bold">كاميرات CCTV + جهاز NVR</span>
+                        </li>
+                        <li class="flex justify-between border-b pb-2">
+                            <span>الإذاعة الداخلية</span>
+                            <span class="font-bold">نظام صوتي كامل</span>
+                        </li>
+                        <li class="flex justify-between pt-2">
+                            <span>استدعاء التمريض</span>
+                            <span class="font-bold">وحدات Call Point</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCHEDULE SECTION -->
+        <section id="schedule" class="content-section">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">خطة الصيانة والفحص الدوري</h2>
+            
+            <div class="mb-6 border-b border-gray-200">
+                <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" role="tablist">
+                    <li class="mr-2" role="presentation">
+                        <button onclick="switchSchedule('daily', this)" class="schedule-tab inline-block p-4 rounded-t-lg border-b-2 border-teal-600 text-teal-600 font-bold cursor-pointer transition-colors" type="button">يومي</button>
+                    </li>
+                    <li class="mr-2" role="presentation">
+                        <button onclick="switchSchedule('weekly', this)" class="schedule-tab inline-block p-4 rounded-t-lg border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 cursor-pointer transition-colors" type="button">أسبوعي</button>
+                    </li>
+                    <li class="mr-2" role="presentation">
+                        <button onclick="switchSchedule('monthly', this)" class="schedule-tab inline-block p-4 rounded-t-lg border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 cursor-pointer transition-colors" type="button">شهري</button>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm p-6 overflow-hidden min-h-[400px]">
+                
+                <!-- Daily Content -->
+                <div id="schedule-daily" class="schedule-content space-y-4">
+                    <h3 class="font-bold text-lg text-teal-700 mb-4 flex items-center border-b pb-2">
+                        <i class="fas fa-sun ml-2"></i> قائمة الفحص اليومي
+                    </h3>
+                    
+                    <div class="flex items-start p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                        <div class="flex-shrink-0 mt-1"><i class="fas fa-bolt text-yellow-600 text-xl"></i></div>
+                        <div class="mr-4">
+                            <h4 class="font-bold text-gray-800">المولد الكهربائي</h4>
+                            <ul class="list-disc list-inside text-sm text-gray-600 mt-1 space-y-1">
+                                <li>فحص وضع التشغيل (أوتوماتيك / يدوي).</li>
+                                <li>قراءة جهد البطارية (12-30 فولت).</li>
+                                <li>مستوى الوقود وتسريبات السوائل.</li>
+                                <li>التأكد من عدم وجود إنذارات على الشاشة.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                        <div class="flex-shrink-0 mt-1"><i class="fas fa-volume-up text-blue-600 text-xl"></i></div>
+                        <div class="mr-4">
+                            <h4 class="font-bold text-gray-800">الإذاعة الداخلية</h4>
+                            <p class="text-sm text-gray-600 mt-1">فحص التيار للراك - عمل المايك - عمل السماعات بالممرات.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                        <div class="flex-shrink-0 mt-1"><i class="fas fa-fire text-red-600 text-xl"></i></div>
+                        <div class="mr-4">
+                            <h4 class="font-bold text-gray-800">لوحة إنذار الحريق</h4>
+                            <p class="text-sm text-gray-600 mt-1">التأكد من عدم وجود رسائل خطأ - اللوحة على وضع Normal/Reset.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weekly Content -->
+                <div id="schedule-weekly" class="schedule-content hidden space-y-4">
+                    <h3 class="font-bold text-lg text-teal-700 mb-4 flex items-center border-b pb-2">
+                        <i class="fas fa-calendar-week ml-2"></i> قائمة الصيانة الأسبوعية
+                    </h3>
+
+                    <div class="flex items-start p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                        <div class="flex-shrink-0 mt-1"><i class="fas fa-cogs text-gray-600 text-xl"></i></div>
+                        <div class="mr-4">
+                            <h4 class="font-bold text-gray-800">اختبار المولد (بدون حمل)</h4>
+                            <p class="text-sm text-gray-600 mt-1">تشغيل المولد لمدة 5-6 دقائق والتأكد من ضغط الزيت والجهد واستقرار الصوت.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                        <div class="flex-shrink-0 mt-1"><i class="fas fa-plug text-yellow-600 text-xl"></i></div>
+                        <div class="mr-4">
+                            <h4 class="font-bold text-gray-800">لوحات الكهرباء</h4>
+                            <p class="text-sm text-gray-600 mt-1">فحص العدادات (أمبير/فولت) - أجهزة الحماية - المصهرات - كفاءة التوصيل الأرضي - نظافة الفلاتر ومراوح الشفط.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                        <div class="flex-shrink-0 mt-1"><i class="fas fa-water text-blue-500 text-xl"></i></div>
+                        <div class="mr-4">
+                            <h4 class="font-bold text-gray-800">مرافق المياه</h4>
+                            <p class="text-sm text-gray-600 mt-1">فحص المواتير - التأكد من امتلاء الخزانات - فحص المحابس والعوامات.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                        <div class="flex-shrink-0 mt-1"><i class="fas fa-user-nurse text-pink-500 text-xl"></i></div>
+                        <div class="mr-4">
+                            <h4 class="font-bold text-gray-800">استدعاء التمريض</h4>
+                            <p class="text-sm text-gray-600 mt-1">فحص بصري وتجربة عشوائية لنقاط الاستدعاء (Call Points) واللمبات.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Monthly Content -->
+                <div id="schedule-monthly" class="schedule-content hidden space-y-4">
+                    <h3 class="font-bold text-lg text-teal-700 mb-4 flex items-center border-b pb-2">
+                        <i class="fas fa-calendar-alt ml-2"></i> قائمة الصيانة الشهرية
+                    </h3>
+
+                    <div class="flex items-start p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                        <div class="flex-shrink-0 mt-1"><i class="fas fa-tachometer-alt text-red-600 text-xl"></i></div>
+                        <div class="mr-4">
+                            <h4 class="font-bold text-gray-800">اختبار المولد (بحمل)</h4>
+                            <p class="text-sm text-gray-600 mt-1">يوم 1 من كل شهر (8 صباحاً) لمدة 15-20 دقيقة. (يتم فصل التيار عمداً بواسطة ATS).</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                        <div class="flex-shrink-0 mt-1"><i class="fas fa-level-up-alt text-gray-600 text-xl"></i></div>
+                        <div class="mr-4">
+                            <h4 class="font-bold text-gray-800">المصعد (شركة الصيانة)</h4>
+                            <p class="text-sm text-gray-600 mt-1">فحص الكابينة - الفرامل - الحبال - الاهتزازات - أزرار الطلب - جرس الطوارئ.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                        <div class="flex-shrink-0 mt-1"><i class="fas fa-lightbulb text-yellow-500 text-xl"></i></div>
+                        <div class="mr-4">
+                            <h4 class="font-bold text-gray-800">الإضاءة والتكييف</h4>
+                            <p class="text-sm text-gray-600 mt-1">فحص جميع الكشافات - تنظيف فلاتر التكييف - فحص صوت المواتير.</p>
+                        </div>
+                    </div>
+
+                     <div class="flex items-start p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                        <div class="flex-shrink-0 mt-1"><i class="fas fa-video text-purple-600 text-xl"></i></div>
+                        <div class="mr-4">
+                            <h4 class="font-bold text-gray-800">الكاميرات و IT</h4>
+                            <p class="text-sm text-gray-600 mt-1">فحص التسجيل (NVR) - زوايا الكاميرات - استبدال الأسلاك التالفة.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            
+            <div class="mt-6">
+                <h3 class="font-bold text-gray-800 mb-4">شركات الصيانة المتعاقدة</h3>
+                <div class="grid md:grid-cols-2 gap-4 text-sm">
+                    <div class="bg-white p-4 rounded shadow-sm border-r-4 border-gray-500">
+                        <p class="font-bold">المركز الهندسي للتوريدات والصيانة</p>
+                        <p class="text-gray-500">صيانة المولدات (شهري)</p>
+                    </div>
+                    <div class="bg-white p-4 rounded shadow-sm border-r-4 border-gray-500">
+                        <p class="font-bold">شركة المصاعد (غير محدد)</p>
+                        <p class="text-gray-500">صيانة المصاعد (نصف شهري)</p>
+                    </div>
+                    <div class="bg-white p-4 rounded shadow-sm border-r-4 border-gray-500">
+                        <p class="font-bold">مركز الغربية لصيانة الأجهزة</p>
+                        <p class="text-gray-500">صيانة الأجهزة الطبية والتكييف</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- EMERGENCY SECTION -->
+        <section id="emergency" class="content-section">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">إجراءات الطوارئ</h2>
+            
+            <div class="grid lg:grid-cols-2 gap-6">
+                <!-- Power Outage -->
+                <div class="bg-red-50 p-6 rounded-xl border border-red-100">
+                    <h3 class="font-bold text-red-800 text-lg mb-3"><i class="fas fa-bolt ml-2"></i> انقطاع التيار الكهربائي</h3>
+                    <ul class="list-decimal list-inside space-y-2 text-sm text-gray-700">
+                        <li>يقوم المفتاح الأوتوماتيكي (ATS) بتشغيل المولد خلال 27 ثانية.</li>
+                        <li>المولد يغطي 100% من إنارة الوحدة والأقسام الحيوية.</li>
+                        <li><strong>في حالة عطل ATS:</strong> يقوم مسؤول الكهرباء بالتحويل اليدوي.</li>
+                        <li><strong>الإبلاغ:</strong> الاتصال بشركة الكهرباء (0402224616).</li>
+                        <li><strong>نفاذ الوقود:</strong> يتم طلب سولار عند وصول الخزان إلى 200 لتر.</li>
+                    </ul>
+                </div>
+
+                <!-- Water Outage -->
+                <div class="bg-blue-50 p-6 rounded-xl border border-blue-100">
+                    <h3 class="font-bold text-blue-800 text-lg mb-3"><i class="fas fa-tint-slash ml-2"></i> انقطاع المياه</h3>
+                    <ul class="list-decimal list-inside space-y-2 text-sm text-gray-700">
+                        <li>الاعتماد على الخزانات (8 متر مكعب) تكفي لمدة 12 ساعة.</li>
+                        <li>الاتصال بشركة المياه (الخط الساخن 125).</li>
+                        <li>طلب سيارات مياه لإعادة تعبئة الخزانات.</li>
+                        <li>الخزانات تستخدم حالياً للحريق فقط لحين إتمام التعاقد للتطهير.</li>
+                    </ul>
+                </div>
+
+                <!-- Fire -->
+                <div class="bg-orange-50 p-6 rounded-xl border border-orange-100">
+                    <h3 class="font-bold text-orange-800 text-lg mb-3"><i class="fas fa-fire-extinguisher ml-2"></i> إجراءات الحريق</h3>
+                    <ul class="list-decimal list-inside space-y-2 text-sm text-gray-700">
+                        <li>كواشف الدخان تطلق الإنذار تلقائياً.</li>
+                        <li>الاتصال بالسويتش أو استخدام الإذاعة الداخلية للإخلاء.</li>
+                        <li>استخدام كواسر الحريق اليدوية إذا لزم الأمر.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- FORMS & LOGS SECTION -->
+        <section id="forms" class="content-section">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">السجلات والنماذج الإلكترونية</h2>
+            
+            <!-- Tabbed Forms -->
+            <div class="flex space-x-2 space-x-reverse mb-6 overflow-x-auto pb-2">
+                <button onclick="switchForm('gen-form')" class="form-tab px-4 py-2 bg-teal-600 text-white rounded-lg whitespace-nowrap transition-colors">سجل المولد (يومي)</button>
+                <button onclick="switchForm('elec-form')" class="form-tab px-4 py-2 bg-white text-gray-600 border rounded-lg hover:bg-gray-50 whitespace-nowrap transition-colors">لوحات الكهرباء (أسبوعي)</button>
+                <button onclick="switchForm('water-form')" class="form-tab px-4 py-2 bg-white text-gray-600 border rounded-lg hover:bg-gray-50 whitespace-nowrap transition-colors">المياه (أسبوعي)</button>
+                <button onclick="switchForm('nurse-form')" class="form-tab px-4 py-2 bg-white text-gray-600 border rounded-lg hover:bg-gray-50 whitespace-nowrap transition-colors">استدعاء التمريض</button>
+            </div>
+
+            <!-- Generator Form -->
+            <div id="gen-form" class="form-content bg-white p-6 rounded-xl shadow-lg border border-teal-100">
+                <h3 class="text-lg font-bold text-teal-800 mb-4 border-b pb-2">نموذج المرور اليومي على المولد الكهربائي</h3>
+                <form onsubmit="submitLog(event)" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
+                    <div>
+                        <label class="block mb-1 font-medium">التاريخ</label>
+                        <input type="date" class="w-full border rounded p-2 focus:ring-2 focus:ring-teal-500" required>
+                    </div>
+                    <div>
+                        <label class="block mb-1 font-medium">حالة التشغيل</label>
+                        <select class="w-full border rounded p-2" required>
+                            <option>أوتوماتيك</option>
+                            <option>يدوي</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block mb-1 font-medium">جهد البطارية (V)</label>
+                        <input type="number" placeholder="مثال: 12-30" class="w-full border rounded p-2">
+                    </div>
+                    <div>
+                        <label class="block mb-1 font-medium">مستوى الوقود</label>
+                        <select class="w-full border rounded p-2">
+                            <option>ممتلئ</option>
+                            <option>3/4</option>
+                            <option>1/2</option>
+                            <option>1/4 (طلب شراء)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block mb-1 font-medium">ضغط الزيت</label>
+                        <input type="text" class="w-full border rounded p-2">
+                    </div>
+                    <div>
+                        <label class="block mb-1 font-medium">درجة الحرارة</label>
+                        <input type="text" class="w-full border rounded p-2">
+                    </div>
+                    <div>
+                        <label class="block mb-1 font-medium">تسريب سوائل</label>
+                        <select class="w-full border rounded p-2">
+                            <option value="no">لا يوجد</option>
+                            <option value="yes">يوجد (اذكر في الملاحظات)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block mb-1 font-medium">إنذار على الشاشة</label>
+                        <select class="w-full border rounded p-2">
+                            <option value="no">لا يوجد</option>
+                            <option value="yes">يوجد</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2 lg:col-span-3">
+                        <label class="block mb-1 font-medium">ملاحظات</label>
+                        <textarea class="w-full border rounded p-2" rows="2"></textarea>
+                    </div>
+                    <div class="md:col-span-2 lg:col-span-3 text-left">
+                        <button type="submit" class="bg-teal-600 text-white px-6 py-2 rounded hover:bg-teal-700 transition">حفظ السجل</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Electrical Form -->
+            <div id="elec-form" class="form-content hidden bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+                <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">نموذج المرور الأسبوعي على لوحات الكهرباء</h3>
+                <form onsubmit="submitLog(event)" class="space-y-4 text-sm">
+                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                             <label class="block mb-1 font-medium">التاريخ</label>
+                             <input type="date" class="w-full border rounded p-2" required>
+                        </div>
+                        <div>
+                             <label class="block mb-1 font-medium">قراءة عدادات الأحمال</label>
+                             <input type="text" class="w-full border rounded p-2" placeholder="تسجيل القراءة">
+                        </div>
+                     </div>
+                     
+                     <div class="grid grid-cols-2 gap-4">
+                        <label class="flex items-center space-x-2 space-x-reverse">
+                            <input type="checkbox" class="form-checkbox text-teal-600 h-5 w-5">
+                            <span class="mr-2">أجهزة الحماية تعمل</span>
+                        </label>
+                        <label class="flex items-center space-x-2 space-x-reverse">
+                            <input type="checkbox" class="form-checkbox text-teal-600 h-5 w-5">
+                            <span class="mr-2">المصهرات سليمة</span>
+                        </label>
+                        <label class="flex items-center space-x-2 space-x-reverse">
+                            <input type="checkbox" class="form-checkbox text-teal-600 h-5 w-5">
+                            <span class="mr-2">مراوح الشفط تعمل</span>
+                        </label>
+                         <label class="flex items-center space-x-2 space-x-reverse">
+                            <input type="checkbox" class="form-checkbox text-teal-600 h-5 w-5">
+                            <span class="mr-2">كفاءة التوصيل الأرضي</span>
+                        </label>
+                    </div>
+                    <div class="text-left mt-4">
+                         <button type="submit" class="bg-teal-600 text-white px-6 py-2 rounded hover:bg-teal-700 transition">حفظ</button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="water-form" class="form-content hidden bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+                <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">نموذج المرور الأسبوعي على مرافق المياه</h3>
+                <form onsubmit="submitLog(event)" class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <label class="flex items-center space-x-2 space-x-reverse">
+                            <input type="checkbox" class="form-checkbox text-teal-600 h-5 w-5">
+                            <span class="mr-2">مواتير المياه تعمل بكفاءة</span>
+                        </label>
+                        <label class="flex items-center space-x-2 space-x-reverse">
+                            <input type="checkbox" class="form-checkbox text-teal-600 h-5 w-5">
+                            <span class="mr-2">لا يوجد تسريب مياه</span>
+                        </label>
+                        <label class="flex items-center space-x-2 space-x-reverse">
+                            <input type="checkbox" class="form-checkbox text-teal-600 h-5 w-5">
+                            <span class="mr-2">الخزان الرئيسي ممتلئ</span>
+                        </label>
+                         <label class="flex items-center space-x-2 space-x-reverse">
+                            <input type="checkbox" class="form-checkbox text-teal-600 h-5 w-5">
+                            <span class="mr-2">العوامات تعمل</span>
+                        </label>
+                    </div>
+                    <div class="text-left mt-4">
+                         <button type="submit" class="bg-teal-600 text-white px-6 py-2 rounded hover:bg-teal-700 transition">حفظ</button>
+                    </div>
+                </form>
+            </div>
+            
+             <div id="nurse-form" class="form-content hidden bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+                <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">نموذج استدعاء التمريض</h3>
+                 <form onsubmit="submitLog(event)" class="space-y-4">
+                     <div class="grid grid-cols-1 gap-4">
+                         <div>
+                             <label class="block mb-1 font-medium">التاريخ</label>
+                             <input type="date" class="w-full border rounded p-2" required>
+                        </div>
+                        <label class="flex items-center space-x-2 space-x-reverse">
+                            <input type="checkbox" class="form-checkbox text-teal-600 h-5 w-5">
+                            <span class="mr-2">الفحص البصري للأجهزة (سليمة)</span>
+                        </label>
+                         <label class="flex items-center space-x-2 space-x-reverse">
+                            <input type="checkbox" class="form-checkbox text-teal-600 h-5 w-5">
+                            <span class="mr-2">تجربة نقاط الاستدعاء (Call Points)</span>
+                        </label>
+                         <label class="flex items-center space-x-2 space-x-reverse">
+                            <input type="checkbox" class="form-checkbox text-teal-600 h-5 w-5">
+                            <span class="mr-2">تجربة حبال الشد (Cords)</span>
+                        </label>
+                     </div>
+                      <div class="text-left mt-4">
+                         <button type="submit" class="bg-teal-600 text-white px-6 py-2 rounded hover:bg-teal-700 transition">حفظ</button>
+                    </div>
+                 </form>
+            </div>
+
+        </section>
+
+        <!-- KPI SECTION -->
+        <section id="kpi" class="content-section">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">مؤشرات الأداء (KPIs)</h2>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-xl shadow-sm">
+                    <h3 class="font-bold text-gray-700 mb-4 text-center">اختبارات المولد (المخطط vs المنفذ)</h3>
+                    <canvas id="generatorChart" height="200"></canvas>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm">
+                    <h3 class="font-bold text-gray-700 mb-4 text-center">نتائج تحليل عينات المياه (مطابق/غير مطابق)</h3>
+                    <canvas id="waterChart" height="200"></canvas>
+                </div>
+                
+                 <div class="bg-white p-6 rounded-xl shadow-sm md:col-span-2">
+                    <h3 class="font-bold text-gray-700 mb-4">تقييم الخطة السنوي</h3>
+                    <div class="relative pt-1">
+                        <div class="flex mb-2 items-center justify-between">
+                            <div>
+                                <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-teal-600 bg-teal-200">
+                                    نسبة الالتزام بالصيانة الوقائية
+                                </span>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-xs font-semibold inline-block text-teal-600">
+                                    95%
+                                </span>
+                            </div>
+                        </div>
+                        <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-teal-200">
+                            <div style="width:95%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-teal-500"></div>
+                        </div>
+                        
+                         <div class="flex mb-2 items-center justify-between">
+                            <div>
+                                <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-blue-600 bg-blue-200">
+                                    معدل أعطال التشغيل
+                                </span>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-xs font-semibold inline-block text-blue-600">
+                                    5% (في الحدود المسموحة)
+                                </span>
+                            </div>
+                        </div>
+                        <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-blue-200">
+                            <div style="width:5%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // Sidebar Navigation
+        function showSection(sectionId, btn) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Update Sidebar Active State
+            document.querySelectorAll('.sidebar-btn').forEach(el => {
+                el.classList.remove('sidebar-active', 'text-teal-700', 'bg-teal-50');
+                el.classList.add('text-gray-600');
+            });
+            btn.classList.add('sidebar-active', 'text-teal-700', 'bg-teal-50');
+            btn.classList.remove('text-gray-600');
+
+            // Close sidebar on mobile
+            if(window.innerWidth < 768) {
+                toggleSidebar();
+            }
+        }
+
+        // Mobile Sidebar Toggle
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        // Schedule Tabs Logic (FIXED)
+        function switchSchedule(type, btn) {
+            // Hide all schedule contents
+            document.querySelectorAll('.schedule-content').forEach(el => el.classList.add('hidden'));
+            // Show target content
+            document.getElementById('schedule-' + type).classList.remove('hidden');
+
+            // Reset all tabs styles
+            document.querySelectorAll('.schedule-tab').forEach(el => {
+                el.className = 'schedule-tab inline-block p-4 rounded-t-lg border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 cursor-pointer transition-colors';
+            });
+
+            // Set active tab style
+            btn.className = 'schedule-tab inline-block p-4 rounded-t-lg border-b-2 border-teal-600 text-teal-600 font-bold cursor-pointer transition-colors';
+        }
+
+        // Forms Tabs Logic
+        function switchForm(formId) {
+            document.querySelectorAll('.form-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(formId).classList.remove('hidden');
+            
+            // Reset Tab Styles
+            document.querySelectorAll('.form-tab').forEach(el => {
+                el.classList.remove('bg-teal-600', 'text-white');
+                el.classList.add('bg-white', 'text-gray-600');
+            });
+            
+            // Set Active Tab Style
+            // Find the button that triggered this or correspond to the form
+            // Since this can be called from "Quick Actions", we iterate to find the matching button
+            const buttons = document.querySelectorAll('.form-tab');
+            let activeBtn;
+            if (formId === 'gen-form') activeBtn = buttons[0];
+            if (formId === 'elec-form') activeBtn = buttons[1];
+            if (formId === 'water-form') activeBtn = buttons[2];
+            if (formId === 'nurse-form') activeBtn = buttons[3];
+
+            if(activeBtn) {
+                activeBtn.classList.remove('bg-white', 'text-gray-600');
+                activeBtn.classList.add('bg-teal-600', 'text-white');
+            }
+        }
+
+        // Mock Submit
+        function submitLog(e) {
+            e.preventDefault();
+            alert('تم حفظ البيانات بنجاح في السجل المحلي!');
+        }
+
+        // Initialize Charts
+        window.onload = function() {
+            const ctxGen = document.getElementById('generatorChart').getContext('2d');
+            new Chart(ctxGen, {
+                type: 'bar',
+                data: {
+                    labels: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو'],
+                    datasets: [{
+                        label: 'اختبارات بحمل',
+                        data: [1, 1, 1, 1, 1, 1],
+                        backgroundColor: '#0d9488'
+                    }, {
+                        label: 'اختبارات بدون حمل',
+                        data: [4, 4, 4, 3, 4, 4], // Example data showing a missed test in April
+                        backgroundColor: '#fbbf24'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+
+            const ctxWater = document.getElementById('waterChart').getContext('2d');
+            new Chart(ctxWater, {
+                type: 'doughnut',
+                data: {
+                    labels: ['مطابق', 'غير مطابق'],
+                    datasets: [{
+                        data: [12, 0],
+                        backgroundColor: ['#10b981', '#ef4444']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+    </script>
+</body>
+</html>
