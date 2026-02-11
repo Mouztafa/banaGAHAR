@@ -76,10 +76,11 @@
     </div>
 
     <!-- Sidebar (z-50 on mobile to cover everything) -->
-    <aside id="sidebar" class="bg-white w-64 h-full flex flex-col fixed md:relative transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-50 shadow-2xl border-l border-gray-200">
+    <!-- Added top-0 left-0 and h-screen to ensure full coverage and correct positioning -->
+    <aside id="sidebar" class="bg-white w-64 h-full flex flex-col fixed top-0 left-0 md:relative transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-50 shadow-2xl border-l md:border-l-0 md:border-r border-gray-200">
         
         <!-- Mobile Sidebar Header with Close Button -->
-        <div class="md:hidden p-4 border-b flex justify-between items-center bg-teal-50">
+        <div class="md:hidden p-4 border-b flex justify-between items-center bg-teal-50 h-16">
             <span class="font-bold text-teal-800">القائمة</span>
             <button onclick="toggleSidebar()" class="text-gray-500 hover:text-red-500 focus:outline-none bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-sm">
                 <i class="fas fa-times text-lg"></i>
